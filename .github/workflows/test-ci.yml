@@ -1,13 +1,14 @@
 name: Build and Push to Huawei Cloud SWR
 
 on:
-  push:
-    branches:
-      - main   # Trigger on push to main branch
+  # push:
+  #   branches:
+  #     - main   # Uncomment this later to trigger automatically on push
+  workflow_dispatch:   # Allows you to trigger the workflow manually from GitHub Actions UI
 
 env:
   IMAGE_NAME: myapp
-  TAG: latest  # or use v1.0.${{ github.run_number }} for versioning
+  TAG: latest  # You can also use v1.0.${{ github.run_number }} for versioning
 
 jobs:
   build-and-push:
