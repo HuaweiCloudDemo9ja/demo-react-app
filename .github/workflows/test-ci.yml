@@ -1,0 +1,41 @@
+name: Build and Push to Huawei Cloud SWR
+
+on:
+  push:
+    branches:
+      - main   # Trigger on push to main branch
+
+env:
+  IMAGE_NAME: myapp
+  TAG: latest  # or use v1.0.${{ github.run_number }} for versioning
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Huawei Cloud SWR
+        run: |
+          docker login -u "${{ secrets.SWR_USERNAME }}" \
+            -p "${{ secrets.SWR_PASSWORD }}" \
+            "${{ secrets.SWR_DOMAIN }}"
+
+      - name: Build Docker image
+        run: |
+          docker build -t ${{ env.IMAGE_NAME }}:${{ env.TAG }} .
+
+      - name: Tag image for SWR
+        run: |
+          docker tag ${{ env.IMAGE_NAME }}:${{ env.TAG }} \
+            ${{ secrets.SWR_DOMAIN }}/${{ secrets.SWR_ORG_NAME }}/${{ env.IMAGE_NAME }}:${{ env.TAG }}
+
+      - name: Push image to Huawei Cloud SWR
+        run: |
+          docker push \
+            ${{ secrets.SWR_DOMAIN }}/${{ secrets.SWR_ORG_NAME }}/${{ env.IMAGE_NAME }}:${{ env.TAG }}
