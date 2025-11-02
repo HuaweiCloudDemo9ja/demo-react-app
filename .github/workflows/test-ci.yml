@@ -29,7 +29,9 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t ${{ env.IMAGE_NAME }}:${{ env.TAG }} .
+          docker build \
+            --build-arg REACT_APP_APP_NAME="${{ secrets.REACT_APP_APP_NAME }}" \
+            -t ${{ env.IMAGE_NAME }}:${{ env.TAG }} .
 
       - name: Tag image for SWR
         run: |
